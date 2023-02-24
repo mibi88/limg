@@ -1,6 +1,6 @@
 """
     png2limg - converts a normal png image (or any other image type
-    supported by PIL) to a limg.
+    supported by PIL) to a limg image.
     Copyright (C) 2023  Mibi88
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
