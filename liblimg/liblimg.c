@@ -55,7 +55,7 @@ int limg_encode(unsigned char **limg_data, Limg *limg) {
             palette[palette_pos] = color;
             palette_pos++;
             if(palette_pos > 255){
-                /* If the palette is to big, exit the loop and set the palette
+                /* If the palette is too big, exit the loop and set the palette
                 size to 0. */
                 palette_pos = 0;
                 break;
