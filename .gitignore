@@ -1,2 +1,5 @@
 __pycache__/
-main
+demo/main
+imgview/imgview
+*.limg
+*.png

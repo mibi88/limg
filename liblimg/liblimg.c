@@ -161,3 +161,21 @@ int limg_free(Limg *limg) {
     limg->h = 0;
     return 0;
 }
+
+void limg_setpixel(int x, int y, uint16_t color, Limg *limg) {
+    /* Check that the position is valid */
+    if(x>=0 && x<limg->w && y>=0 && y<limg->h){
+        /* Put the color into carray */
+        limg->carray[y*limg->w+x] = color;
+    }
+}
+
+uint16_t limg_getpixel(int x, int y, Limg *limg) {
+    /* Check that the position is valid */
+    if(x>=0 && x<limg->w && y>=0 && y<limg->h){
+        /* Get the color of carray */
+        return limg->carray[y*limg->w+x];
+    }
+    /* Return 0 because it's black and we found nothing */
+    return 0;
+}
