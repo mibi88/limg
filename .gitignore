@@ -1,5 +1,6 @@
 __pycache__/
 demo/main
 imgview/imgview
+imgview_sdl12/imgview
 *.limg
 *.png
