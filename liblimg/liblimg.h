@@ -29,7 +29,8 @@ enum {
     PALETTE_BADINDEX     = -3,
     LIMG_ALREADYFREE     = -4,
     MALLOCERROR_LIMGDATA = -5,
-    COLOR_MISSING        = -6
+    COLOR_MISSING        = -6,
+    LIMG_TOOBIG          = -7
 };
 
 typedef struct {
@@ -89,6 +90,14 @@ exiting.
 */
 
 int limg_free(Limg *limg);
+
+/* int limg_create(int w, int h, uint16_t bg_color, Limg *limg);
+
+Make a limg image filled with color bg_color of size (w, h) in a free
+Limg struct.
+*/
+
+int limg_create(int w, int h, uint16_t bg_color, Limg *limg);
 
 /* void limg_setpixel(int x, int y, uint16_t color, Limg *limg);
 
