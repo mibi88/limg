@@ -1,6 +1,6 @@
-__pycache__/
-demo/main
-imgview/imgview
-imgview_sdl12/imgview
+tools/__pycache__/
+liblimg/demo/main
+imgview/sdl2/imgview
+imgview/sdl1_2/imgview
 *.limg
 *.png
