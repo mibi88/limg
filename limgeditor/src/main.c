@@ -81,7 +81,6 @@ int main(int argc, char **argv) {
     if(out < 0){
         report_error(out);
     }
-    printf("%03x", limg_getpixel(0, 0, &limg));
     uInit(396, 224, "Limg image editor", 4, 20);
     while(!uAskexit()){
         uClear();
