@@ -23,11 +23,11 @@ int _frame = 0;
 
 void draw_limg(Limg *limg, int sx, int sy, int w, int h, int ix, int iy, int scale, int cx, int cy){
     int mx = w/scale+1, my = h/scale+1, dx, dy, bx, by, x, y;
-    unsigned char rgb[3], cur_color;
+    unsigned char rgb[3];
     uint32_t color;
     rgb[0] = (unsigned char)_frame*15;
-    rgb[1] = (unsigned char)_frame*15;
-    rgb[2] = (unsigned char)_frame*15;
+    rgb[1] = rgb[0];
+    rgb[2] = rgb[0];
     for(y=0;y<my;y++){
         for(x=0;x<mx;x++){
             color = rgb565torgb888(limg_getpixel(ix+x, iy+y, limg));

@@ -102,5 +102,7 @@ int main(int argc, char **argv) {
         uShow();
         uWaitnextframe();
     }
+    limg_free(&limg);
+    free(limg_data);
     return 0;
 }
