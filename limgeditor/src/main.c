@@ -22,6 +22,9 @@
 
 #include "draw_limg.h"
 
+#define VWIDTH  364
+#define VHEIGHT 192
+
 void report_error(int error) {
     printf("Error when reading this image, error %d :\n", error);
     switch(error){
@@ -49,9 +52,54 @@ void report_error(int error) {
 }
 
 int main(int argc, char **argv) {
-    uInit(396, 224, "Limg image editor", 4, 50);
+    unsigned char *limg_data = NULL;
+    Limg limg;
+    int size, out, x = 0, y = 0, scale = 4, ix = 0, iy = 0;
+    FILE *fp;
+    if(argc < 2){
+        puts("More args required !");
+        puts("limgedit <limg image>");
+        return 1;
+    }
+    fp = fopen(argv[1], "rb");
+    if(fp == NULL){
+        printf("Can't open \"%s\"\n", argv[1]);
+        return 2;
+    }
+	fseek(fp, 0L, SEEK_END);
+	size = ftell(fp);
+	rewind(fp);
+	limg_data = malloc(sizeof(unsigned char) * size);
+	if(limg_data == NULL){
+		puts("More memory needed !");
+        return 3;
+	}
+	fread(limg_data, 1, sizeof(unsigned char) * size, fp);
+	fclose(fp);
+    limg_init(&limg);
+    out = limg_decode(limg_data, &limg);
+    if(out < 0){
+        report_error(out);
+    }
+    printf("%03x", limg_getpixel(0, 0, &limg));
+    uInit(396, 224, "Limg image editor", 4, 20);
     while(!uAskexit()){
         uClear();
+        if(uKeydown(KUP) && y>0) y--;
+        if(uKeydown(KDOWN) && y<limg.h-1) y++;
+        if(uKeydown(KLEFT) && x>0) x--;
+        if(uKeydown(KRIGHT) && x<limg.w-1) x++;
+        /* Fix ix and iy */
+        while(x > ix+VWIDTH/scale-1) ix++;
+        while(x < ix) ix--;
+        while(y > iy+VHEIGHT/scale-1) iy++;
+        while(y < iy) iy--;
+        if(uKeydown(KVALID)){
+            scale++;
+            if(scale > 8) scale = 1;
+            while(uKeydown(KVALID));
+        }
+        draw_limg(&limg, 32, 0, VWIDTH, VHEIGHT, ix, iy, scale, x, y);
         uShow();
         uWaitnextframe();
     }

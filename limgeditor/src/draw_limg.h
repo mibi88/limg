@@ -19,6 +19,10 @@
 #ifndef DRAW_LIMG_H
 #define DRAW_LIMG_H
 
-void draw_limg(Limg *limg, int sx, int sy, int w, int h, int ix, int iy);
+#include <liblimg.h>
+#include <rgbconv.h>
+#include <libudraw.h>
+
+void draw_limg(Limg *limg, int sx, int sy, int w, int h, int ix, int iy, int scale, int cx, int cy);
 
 #endif
