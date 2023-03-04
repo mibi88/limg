@@ -1,6 +1,9 @@
 tools/__pycache__/
 liblimg/demo/main
-imgview/sdl2/imgview
-imgview/sdl1_2/imgview
+liblimg/lib/lib
+liblimg/lib/build
+limgview/sdl2/limgview
+limgview/sdl1_2/limgview
+limgeditor/limgedit
 *.limg
 *.png

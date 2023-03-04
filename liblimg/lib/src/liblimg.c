@@ -16,7 +16,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-#include "liblimg.h"
+#include "../include/liblimg/liblimg.h"
 #include <string.h>
 #include <stdlib.h>
 #include <stdbool.h>

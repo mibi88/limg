@@ -1,0 +1,3 @@
+[submodule "limgeditor/uDraw"]
+	path = limgeditor/uDraw
+	url = https://github.com/mibi88/uDraw.git

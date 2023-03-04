@@ -16,7 +16,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-#include "rgbconv.h"
+#include "../include/liblimg/rgbconv.h"
 
 uint16_t rgb888torgb565(uint32_t rgb888) {
     int r, g, b;
