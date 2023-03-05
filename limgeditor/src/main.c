@@ -50,9 +50,13 @@ void report_error(int error) {
         case COLOR_MISSING:
             puts("Color missing !");
             break;
+        case LIMG_TOOBIG:
+            puts("Too big image !");
+            break;
         default:
             puts("Unknown error !");
     }
+    exit(error);
 }
 
 bool keys_already_down[KEYS];
@@ -62,32 +66,39 @@ bool ask_changestate = 0;
 int main(int argc, char **argv) {
     unsigned char *limg_data = NULL;
     Limg limg;
-    int size, out, x = 0, y = 0, scale = 4, ix = 0, iy = 0, colorcur = 0;
+    int size, out, x = 0, y = 0, scale = 4, ix = 0, iy = 0, colorcur = 0, w = 16, h = 16;
     uint16_t color = 0x0000;
     unsigned char rgb[3];
     FILE *fp;
-    if(argc < 2){
-        puts("More args required !");
-        puts("limgedit <limg image>");
-        return 1;
-    }
-    fp = fopen(argv[1], "rb");
-    if(fp == NULL){
-        printf("Can't open \"%s\"\n", argv[1]);
-        return 2;
-    }
-	fseek(fp, 0L, SEEK_END);
-	size = ftell(fp);
-	rewind(fp);
-	limg_data = malloc(sizeof(unsigned char) * size);
-	if(limg_data == NULL){
-		puts("More memory needed !");
-        return 3;
-	}
-	fread(limg_data, 1, sizeof(unsigned char) * size, fp);
-	fclose(fp);
     limg_init(&limg);
-    out = limg_decode(limg_data, &limg);
+    if(argc >= 4 && argv[1][0] == 'o'){
+        fp = fopen(argv[3], "rb");
+        if(fp == NULL){
+            printf("Can't open \"%s\"\n", argv[3]);
+            return 2;
+        }
+    	fseek(fp, 0L, SEEK_END);
+    	size = ftell(fp);
+    	rewind(fp);
+    	limg_data = malloc(sizeof(unsigned char) * size);
+    	if(limg_data == NULL){
+    		puts("More memory needed !");
+            return 3;
+    	}
+    	fread(limg_data, 1, sizeof(unsigned char) * size, fp);
+    	fclose(fp);
+        out = limg_decode(limg_data, &limg);
+    }else if(argc >= 5 && argv[1][0] == 'n'){
+        w = atoi(argv[3]);
+        h = atoi(argv[4]);
+        if(w < 1) w = 1;
+        if(h < 1) h = 1;
+        out = limg_create(w, h, 0x0000, &limg);
+    }else{
+        puts("Need more args : $ limgedit o <out file> <in file>");
+        puts("or               $ limgedit n <out file> <width> <height>");
+        exit(1);
+    }
     if(out < 0){
         report_error(out);
     }
@@ -167,6 +178,16 @@ int main(int argc, char **argv) {
         uShow();
         uWaitnextframe();
     }
+    /* Save */
+    out = limg_encode(&limg_data, &limg);
+    if(out < 0) report_error(out);
+    fp = fopen(argv[2], "wb");
+    if(fp == NULL){
+        printf("Can't make \"%s\"\n", argv[2]);
+        return 2;
+    }
+    fwrite((char*)limg_data, 1, out, fp);
+    fclose(fp);
     limg_free(&limg);
     free(limg_data);
     return 0;
