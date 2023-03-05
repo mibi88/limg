@@ -1,4 +1,9 @@
-SRC = src/main.c src/draw_limg.c ../liblimg/lib/lib/liblimg.a uDraw/lib/libuDraw.a
+SRC = src/main.c \
+	  src/draw_limg.c \
+	  src/gfx.c \
+	  src/popups.c \
+	  ../liblimg/lib/lib/liblimg.a \
+	  uDraw/lib/libuDraw.a
 
 all:
 	(cd uDraw && make)
