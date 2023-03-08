@@ -23,71 +23,38 @@
 
 #include "draw_limg.h"
 #include "gfx.h"
+#include "popups.h"
+#include "keyboard.h"
+#include "file.h"
+#include "error.h"
 
 #define VWIDTH  364
 #define VHEIGHT 192
 
-#define KEYS    7
+#define MILIFONT "./data/milifont.limg"
 
-void report_error(int error) {
-    printf("Error when reading this image, error %d :\n", error);
-    switch(error){
-        case MAGIC_NOTFOUND:
-            puts("Magic \"LIMG-V1\" not found !");
-            break;
-        case MALLOCERROR_CARRAY:
-            puts("Need more ram to malloc carray !");
-            break;
-        case PALETTE_BADINDEX:
-            puts("Bad index for the palette !");
-            break;
-        case LIMG_ALREADYFREE:
-            puts("Limg image is already free !");
-            break;
-        case MALLOCERROR_LIMGDATA:
-            puts("Need more ram to malloc limg_data !");
-            break;
-        case COLOR_MISSING:
-            puts("Color missing !");
-            break;
-        case LIMG_TOOBIG:
-            puts("Too big image !");
-            break;
-        default:
-            puts("Unknown error !");
-    }
-    exit(error);
-}
-
-bool keys_already_down[KEYS];
 int state = 0;
 bool ask_changestate = 0;
 
 int main(int argc, char **argv) {
     unsigned char *limg_data = NULL;
-    Limg limg;
-    int size, out, x = 0, y = 0, scale = 4, ix = 0, iy = 0, colorcur = 0, w = 16, h = 16;
+    Limg limg, milifont;
+    int out, x = 0, y = 0, scale = 4, ix = 0, iy = 0, colorcur = 0, w = 16, h = 16;
     uint16_t color = 0x0000;
     unsigned char rgb[3];
     FILE *fp;
+    limg_init(&milifont);
+    load_limg(MILIFONT, &milifont);
     limg_init(&limg);
+    kbd_setrepeat(KUP, 1);
+    kbd_setrepeat(KDOWN, 1);
+    kbd_setrepeat(KLEFT, 1);
+    kbd_setrepeat(KRIGHT, 1);
+    kbd_setrepeat(KX, 1);
+    kbd_setrepeat(KC, 0);
+    kbd_setrepeat(KV, 0);
     if(argc >= 4 && argv[1][0] == 'o'){
-        fp = fopen(argv[3], "rb");
-        if(fp == NULL){
-            printf("Can't open \"%s\"\n", argv[3]);
-            return 2;
-        }
-    	fseek(fp, 0L, SEEK_END);
-    	size = ftell(fp);
-    	rewind(fp);
-    	limg_data = malloc(sizeof(unsigned char) * size);
-    	if(limg_data == NULL){
-    		puts("More memory needed !");
-            return 3;
-    	}
-    	fread(limg_data, 1, sizeof(unsigned char) * size, fp);
-    	fclose(fp);
-        out = limg_decode(limg_data, &limg);
+        load_limg(argv[3], &limg);
     }else if(argc >= 5 && argv[1][0] == 'n'){
         w = atoi(argv[3]);
         h = atoi(argv[4]);
@@ -107,64 +74,48 @@ int main(int argc, char **argv) {
         uClear((uint32_t)0xC8FC90);
         if(state == 0){
             /* Move the cursor */
-            if(uKeydown(KUP) && y>0) y--;
-            if(uKeydown(KDOWN) && y<limg.h-1) y++;
-            if(uKeydown(KLEFT) && x>0) x--;
-            if(uKeydown(KRIGHT) && x<limg.w-1) x++;
+            if(kbd_kdown(KUP) && y>0) y--;
+            if(kbd_kdown(KDOWN) && y<limg.h-1) y++;
+            if(kbd_kdown(KLEFT) && x>0) x--;
+            if(kbd_kdown(KRIGHT) && x<limg.w-1) x++;
             /* Fix ix and iy */
             while(x > ix+VWIDTH/scale-1) ix++;
             while(x < ix) ix--;
             while(y > iy+VHEIGHT/scale-1) iy++;
             while(y < iy) iy--;
             /* Other actions */
-            if(uKeydown(KC)){
-                if(!keys_already_down[5]){
-                    scale++;
-                    if(scale > 8) scale = 1;
-                    keys_already_down[5] = 1;
-                }
-            }else if(keys_already_down[5]){
-                keys_already_down[5] = 0;
+            if(kbd_kdown(KC)){
+                scale++;
+                if(scale > 8) scale = 1;
             }
-            if(uKeydown(KX)) limg_setpixel(x, y, color, &limg);
-            if(uKeydown(KV)){
-                if(!keys_already_down[6]){
-                    state = 1;
-                }
-            }else if(keys_already_down[6]){
-                keys_already_down[6] = 0;
+            if(kbd_kdown(KX)) limg_setpixel(x, y, color, &limg);
+            if(kbd_kdown(KV)){
+                kbd_setrepeat(KUP, 0);
+                kbd_setrepeat(KDOWN, 0);
+                kbd_setrepeat(KX, 0);
+                state = 1;
             }
         }else if(state == 1){
-            if(uKeydown(KX)){
-                if(!keys_already_down[4]){
-                    ask_changestate = 1;
-                    keys_already_down[4] = 1;
-                }
-            }else if(keys_already_down[4]){
-                if(ask_changestate) state = 0;
-                keys_already_down[4] = 0;
+            if(kbd_kdown(KX)){
+                ask_changestate = 1;
+            }else if(ask_changestate && !uKeydown(KX)){
+                kbd_setrepeat(KUP, 1);
+                kbd_setrepeat(KDOWN, 1);
+                kbd_setrepeat(KX, 1);
+                ask_changestate = 0;
+                state = 0;
             }
-            if(uKeydown(KUP)){
-                if(!keys_already_down[0]){
-                    colorcur--;
-                    if(colorcur < 0) colorcur = 2;
-                    keys_already_down[0] = 1;
-                }
-            }else if(keys_already_down[0]){
-                keys_already_down[0] = 0;
+            if(kbd_kdown(KUP)){
+                colorcur--;
+                if(colorcur < 0) colorcur = 2;
             }
-            if(uKeydown(KDOWN)){
-                if(!keys_already_down[1]){
-                    colorcur++;
-                    if(colorcur > 2) colorcur = 0;
-                    keys_already_down[1] = 1;
-                }
-            }else if(keys_already_down[1]){
-                keys_already_down[1] = 0;
+            if(kbd_kdown(KDOWN)){
+                colorcur++;
+                if(colorcur > 2) colorcur = 0;
             }
             getrgb565(color, rgb);
-            if(uKeydown(KLEFT) && rgb[colorcur] > 0) rgb[colorcur]--;
-            if(uKeydown(KRIGHT) && (colorcur == 1 ? rgb[colorcur] < 63 : rgb[colorcur] < 31)) rgb[colorcur]++;
+            if(kbd_kdown(KLEFT) && rgb[colorcur] > 0) rgb[colorcur]--;
+            if(kbd_kdown(KRIGHT) && (colorcur == 1 ? rgb[colorcur] < 63 : rgb[colorcur] < 31)) rgb[colorcur]++;
             color = makergb565(rgb);
         }else{
             state = 0;
@@ -189,6 +140,7 @@ int main(int argc, char **argv) {
     fwrite((char*)limg_data, 1, out, fp);
     fclose(fp);
     limg_free(&limg);
+    limg_free(&milifont);
     free(limg_data);
     return 0;
 }

@@ -2,6 +2,9 @@ SRC = src/main.c \
 	  src/draw_limg.c \
 	  src/gfx.c \
 	  src/popups.c \
+	  src/keyboard.c \
+	  src/file.c \
+	  src/error.c \
 	  ../liblimg/lib/lib/liblimg.a \
 	  uDraw/lib/libuDraw.a
 
