@@ -5,6 +5,8 @@ SRC = src/main.c \
 	  src/keyboard.c \
 	  src/file.c \
 	  src/error.c \
+	  src/text.c \
+	  src/image.c \
 	  ../liblimg/lib/lib/liblimg.a \
 	  uDraw/lib/libuDraw.a
 

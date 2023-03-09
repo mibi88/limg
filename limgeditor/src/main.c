@@ -27,6 +27,7 @@
 #include "keyboard.h"
 #include "file.h"
 #include "error.h"
+#include "text.h"
 
 #define VWIDTH  364
 #define VHEIGHT 192
@@ -124,7 +125,7 @@ int main(int argc, char **argv) {
         vline(31, 0, VHEIGHT, 0x588C28);
         hline(VHEIGHT, 32, 396, 0x588C28);
         if(state == 1){
-            color = color_chooser(134, 80, 128, 64, color, colorcur);
+            color = color_chooser(134, 80, 128, 64, color, colorcur, &milifont);
         }
         uShow();
         uWaitnextframe();
