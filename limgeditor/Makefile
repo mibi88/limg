@@ -7,6 +7,7 @@ SRC = src/main.c \
 	  src/error.c \
 	  src/text.c \
 	  src/image.c \
+	  src/menu.c \
 	  ../liblimg/lib/lib/liblimg.a \
 	  uDraw/lib/libuDraw.a
 

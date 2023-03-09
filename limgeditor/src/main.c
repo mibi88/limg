@@ -28,19 +28,25 @@
 #include "file.h"
 #include "error.h"
 #include "text.h"
+#include "menu.h"
 
 #define VWIDTH  364
 #define VHEIGHT 192
 
 #define MILIFONT "./data/milifont.limg"
 
-int state = 0;
-bool ask_changestate = 0;
+int state = 0, ask_changestate = 0;
+const char menu[MENU_SIZE][9] = {
+    "C. Scale",
+    "Rep. Mv.",
+    "Cg. Col."
+};
 
 int main(int argc, char **argv) {
     unsigned char *limg_data = NULL;
     Limg limg, milifont;
-    int out, x = 0, y = 0, scale = 4, ix = 0, iy = 0, colorcur = 0, w = 16, h = 16;
+    int out, x = 0, y = 0, scale = 4, ix = 0, iy = 0, colorcur = 0, menucur = 0, w = 16, h = 16;
+    bool moverepeat = 1;
     uint16_t color = 0x0000;
     unsigned char rgb[3];
     FILE *fp;
@@ -86,13 +92,17 @@ int main(int argc, char **argv) {
             while(y < iy) iy--;
             /* Other actions */
             if(kbd_kdown(KC)){
-                scale++;
-                if(scale > 8) scale = 1;
+                kbd_setrepeat(KLEFT, 0);
+                kbd_setrepeat(KRIGHT, 0);
+                kbd_setrepeat(KX, 0);
+                state = 2;
             }
             if(kbd_kdown(KX)) limg_setpixel(x, y, color, &limg);
             if(kbd_kdown(KV)){
                 kbd_setrepeat(KUP, 0);
                 kbd_setrepeat(KDOWN, 0);
+                kbd_setrepeat(KLEFT, 1);
+                kbd_setrepeat(KRIGHT, 1);
                 kbd_setrepeat(KX, 0);
                 state = 1;
             }
@@ -100,8 +110,10 @@ int main(int argc, char **argv) {
             if(kbd_kdown(KX)){
                 ask_changestate = 1;
             }else if(ask_changestate && !uKeydown(KX)){
-                kbd_setrepeat(KUP, 1);
-                kbd_setrepeat(KDOWN, 1);
+                kbd_setrepeat(KUP, moverepeat);
+                kbd_setrepeat(KDOWN, moverepeat);
+                kbd_setrepeat(KLEFT, moverepeat);
+                kbd_setrepeat(KRIGHT, moverepeat);
                 kbd_setrepeat(KX, 1);
                 ask_changestate = 0;
                 state = 0;
@@ -118,6 +130,43 @@ int main(int argc, char **argv) {
             if(kbd_kdown(KLEFT) && rgb[colorcur] > 0) rgb[colorcur]--;
             if(kbd_kdown(KRIGHT) && (colorcur == 1 ? rgb[colorcur] < 63 : rgb[colorcur] < 31)) rgb[colorcur]++;
             color = makergb565(rgb);
+        }else if(state == 2){
+            if(kbd_kdown(KLEFT) && menucur > 0) menucur--;
+            if(kbd_kdown(KRIGHT) && menucur < MENU_SIZE-1) menucur++;
+            if(kbd_kdown(KX)){
+                if(menucur == 0){
+                    scale++;
+                    if(scale > 8) scale = 1;
+                }else if(menucur == 1){
+                    ask_changestate = 2;
+                }else if(menucur == 2){
+                    kbd_setrepeat(KUP, 0);
+                    kbd_setrepeat(KDOWN, 0);
+                    kbd_setrepeat(KLEFT, 1);
+                    kbd_setrepeat(KRIGHT, 1);
+                    kbd_setrepeat(KX, 0);
+                    ask_changestate = 0;
+                    state = 1;
+                }
+            }else if(ask_changestate == 2 && !uKeydown(KX)){
+                moverepeat = !moverepeat;
+                kbd_setrepeat(KUP, moverepeat);
+                kbd_setrepeat(KDOWN, moverepeat);
+                kbd_setrepeat(KLEFT, moverepeat);
+                kbd_setrepeat(KRIGHT, moverepeat);
+                kbd_setrepeat(KX, 1);
+                ask_changestate = 0;
+                state = 0;
+            }
+            if(kbd_kdown(KC)){
+                ask_changestate = 1;
+            }else if(ask_changestate == 1 && !uKeydown(KC)){
+                kbd_setrepeat(KLEFT, moverepeat);
+                kbd_setrepeat(KRIGHT, moverepeat);
+                kbd_setrepeat(KX, 1);
+                ask_changestate = 0;
+                state = 0;
+            }
         }else{
             state = 0;
         }
@@ -127,6 +176,7 @@ int main(int argc, char **argv) {
         if(state == 1){
             color = color_chooser(134, 80, 128, 64, color, colorcur, &milifont);
         }
+        draw_menu(32, 194, menucur, state == 2, menu, &milifont);
         uShow();
         uWaitnextframe();
     }
