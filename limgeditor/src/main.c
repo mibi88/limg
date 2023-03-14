@@ -16,31 +16,8 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-#include <libudraw.h>
-#include <rgbconv.h>
-#include <liblimg.h>
-#include <rgbconv.h>
+#include "io.h"
 
-#include "draw_limg.h"
-#include "gfx.h"
-#include "popups.h"
-#include "keyboard.h"
-#include "file.h"
-#include "error.h"
-#include "text.h"
-#include "menu.h"
-#include "filechooser.h"
-#include "textbox.h"
-#include "textinput.h"
-
-#define VWIDTH  364
-#define VHEIGHT 192
-
-#define MILIFONT "./data/milifont.limg"
-
-#define F_AMOUNT 30
-
-int state = 4, ask_changestate = 0;
 const char menu[MENU_SIZE][9] = {
     "C. Scale",
     "Rep. Mv.",
@@ -50,25 +27,14 @@ const char menu[MENU_SIZE][9] = {
     "Mn. Menu"
 };
 
+Io io;
 extern char _file[PATH_MAX+NAME_MAX], _path[PATH_MAX];
 
 int main(void) {
-    unsigned char *limg_data = NULL;
-    Limg limg, milifont;
-    int out, x = 0, y = 0, scale = 4, ix = 0, iy = 0, colorcur = 0, menucur = 0, w = 16, h = 16;
-    int dirsize, dircur = 0, dirview = 0;
-    int mainmenucur = 0;
-    bool moverepeat = 1;
-    uint16_t color = 0x0000;
-    unsigned char rgb[3];
-    char wtext[6], htext[6];
-    int wcur = 0, hcur = 0, ncur = 0;
-    char ftext[9];
-    int fcur = 0;
-    FILE *fp;
-    limg_init(&milifont);
-    load_limg(MILIFONT, &milifont);
-    limg_init(&limg);
+    io_init(&io);
+    limg_init(&io.milifont);
+    load_limg(MILIFONT, &io.milifont);
+    limg_init(&io.limg);
     kbd_setrepeat(KUP, 1);
     kbd_setrepeat(KDOWN, 1);
     kbd_setrepeat(KLEFT, 1);
@@ -80,32 +46,7 @@ int main(void) {
     while(!uAskexit()){
         uClear((uint32_t)0xC8FC90);
         if(state == 0){
-            /* Move the cursor */
-            if(kbd_kdown(KUP) && y>0) y--;
-            if(kbd_kdown(KDOWN) && y<limg.h-1) y++;
-            if(kbd_kdown(KLEFT) && x>0) x--;
-            if(kbd_kdown(KRIGHT) && x<limg.w-1) x++;
-            /* Fix ix and iy */
-            while(x > ix+VWIDTH/scale-1) ix++;
-            while(x < ix) ix--;
-            while(y > iy+VHEIGHT/scale-1) iy++;
-            while(y < iy) iy--;
-            /* Other actions */
-            if(kbd_kdown(KC)){
-                kbd_setrepeat(KLEFT, 0);
-                kbd_setrepeat(KRIGHT, 0);
-                kbd_setrepeat(KX, 0);
-                state = 2;
-            }
-            if(kbd_kdown(KX)) limg_setpixel(x, y, color, &limg);
-            if(kbd_kdown(KV)){
-                kbd_setrepeat(KUP, 0);
-                kbd_setrepeat(KDOWN, 0);
-                kbd_setrepeat(KLEFT, 1);
-                kbd_setrepeat(KRIGHT, 1);
-                kbd_setrepeat(KX, 0);
-                state = 1;
-            }
+            editor_input(&io);
         }else if(state == 1){
             if(kbd_kdown(KX)){
                 ask_changestate = 1;
