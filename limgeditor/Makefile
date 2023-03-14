@@ -11,6 +11,7 @@ SRC = src/main.c \
 	  src/filechooser.c \
 	  src/textbox.c \
 	  src/textinput.c \
+	  src/io.c \
 	  ../liblimg/lib/lib/liblimg.a \
 	  uDraw/lib/libuDraw.a
 
