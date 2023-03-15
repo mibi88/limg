@@ -12,6 +12,7 @@ SRC = src/main.c \
 	  src/textbox.c \
 	  src/textinput.c \
 	  src/io.c \
+	  src/screens/screen_editor.c \
 	  ../liblimg/lib/lib/liblimg.a \
 	  uDraw/lib/libuDraw.a
 
