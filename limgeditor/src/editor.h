@@ -21,7 +21,7 @@
 #define VWIDTH  364
 #define VHEIGHT 192
 
-#define MILIFONT "./data/milifont.limg"
+#define MILIFONT "../data/milifont.h"
 
 #define F_AMOUNT 30
 

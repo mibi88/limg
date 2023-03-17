@@ -17,6 +17,7 @@
  */
 
 #include "editor.h"
+#include MILIFONT
 
 int state = SCREEN_MAINMENU;
 unsigned char *limg_data = NULL;
@@ -24,7 +25,7 @@ Limg limg, milifont;
 
 int main(void) {
     limg_init(&milifont);
-    load_limg(MILIFONT, &milifont);
+    if(limg_decode((unsigned char *)b_milifont, &milifont) < 0) state = -6;
     limg_init(&limg);
     kbd_setrepeat(KUP, 1);
     kbd_setrepeat(KDOWN, 1);
@@ -65,20 +66,29 @@ int main(void) {
                 act_default();
         }
         disp_editor();
-        if(state == SCREEN_COLORC){
-            disp_colorc();
-        }else if(state == SCREEN_OPEN){
-            disp_open();
-        }else if(state == SCREEN_MAINMENU){
-            disp_mainmenu();
-        }else if(state == SCREEN_NEW){
-            disp_new();
-        }else if(state == SCREEN_SAVE1){
-            disp_save1();
-        }else if(state == SCREEN_SAVE2){
-            disp_save2();
-        }else if(state < 0){
-            disp_error();
+        switch(state){
+            case SCREEN_COLORC:
+                disp_colorc();
+                break;
+            case SCREEN_OPEN:
+                disp_open();
+                break;
+            case SCREEN_MAINMENU:
+                disp_mainmenu();
+                break;
+            case SCREEN_NEW:
+                disp_new();
+                break;
+            case SCREEN_SAVE1:
+                disp_save1();
+                break;
+            case SCREEN_SAVE2:
+                disp_save2();
+                break;
+            default:
+                if(state < 0){
+                    disp_error();
+                }
         }
         uShow();
         uWaitnextframe();
