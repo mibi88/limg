@@ -250,14 +250,10 @@ void act_save2(void) {
         strcat(_file, ftext);
         strcat(_file, ".limg");
         /* Save */
-        out = limg_encode(&limg_data, &limg);
-        if(out >= 0){
-            fp = fopen(_file, "wb");
-            if(fp != NULL){
-                fwrite((char*)limg_data, 1, out, fp);
-                fclose(fp);
-            }else state = -3;
-        }else state = -4;
+        out = limg_tofile(_file, &limg);
+        if(out < 0){
+            state = -4;
+        }
         ask_changestate = 0;
         state = SCREEN_EDITOR;
     }

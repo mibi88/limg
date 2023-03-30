@@ -19,13 +19,10 @@
 #include "../include/liblimg/liblimg.h"
 #include <string.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <stdbool.h>
 
 #define DEBUG (0)
-
-#if DEBUG
-#include <stdio.h>
-#endif
 
 /* Tools to manipulate data */
 
@@ -44,6 +41,11 @@ bool _colorinpalette(uint16_t color, uint16_t palette[256], int psize) {
 void _put_uint16_t(uint16_t value, unsigned char *out, int start_pos) {
     out[start_pos] = value>>8;
     out[start_pos+1] = value;
+}
+
+void _fput_uint16_t(uint16_t value, FILE *fp) {
+    fputc(value>>8, fp);
+    fputc(value, fp);
 }
 
 int _getcolor(uint16_t color, uint16_t palette[256], int psize) {
@@ -111,6 +113,56 @@ int limg_encode(unsigned char **limg_data, Limg *limg) {
             _put_uint16_t(limg->carray[i], *limg_data, 12+i*2);
         }
     }
+    return dsize;
+}
+
+int limg_tofile(char *fname, Limg *limg) {
+    uint16_t palette[256], color;
+    int size = limg->w*limg->h, i, palette_pos = 0, pos, dsize;
+    FILE *fp;
+    /* Open the file */
+    fp = fopen(fname, "wb");
+    if(fp == NULL) return FILENOTFOUND;
+    /* Get the amount of colors */
+    for(i=0;i<size;i++){
+        color = limg->carray[i];
+        if(!_colorinpalette(color, palette, palette_pos)){
+            /* If the color is not found, add it */
+            palette[palette_pos] = color;
+            palette_pos++;
+            if(palette_pos > 255){
+                /* If the palette is too big, exit the loop and set the palette
+                size to 0. */
+                palette_pos = 0;
+                break;
+            }
+        }
+    }
+#if DEBUG
+    printf("The image has %d colors.\n", palette_pos);
+#endif
+    /* Start writing ... */
+    /* Write the magic "LIMG-V1" */
+    fputs((const char *)"LIMG-V1", fp);
+    _fput_uint16_t((uint16_t)limg->w, fp);
+    _fput_uint16_t((uint16_t)limg->h, fp);
+    fputc((unsigned char)palette_pos, fp);
+    for(i=0;i<palette_pos;i++){ /* Put the palette into limg_data if we've one. */
+        _fput_uint16_t(palette[i], fp);
+    }
+    /* And now, trow the pixels into limg_data */
+    if(palette_pos>0){ /* If we've a palette */
+        for(i=0;i<limg->w*limg->h;i++){
+            pos = _getcolor(limg->carray[i], palette, palette_pos);
+            if(pos < 0) return COLOR_MISSING;
+            fputc((unsigned char)pos, fp);
+        }
+    }else{
+        for(i=0;i<limg->w*limg->h;i++){
+            _fput_uint16_t(limg->carray[i], fp);
+        }
+    }
+    fclose(fp);
     return dsize;
 }
 
