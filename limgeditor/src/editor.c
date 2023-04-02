@@ -301,6 +301,8 @@ void disp_open(void) {
         ask_changestate = 0;
         kbd_setrepeat(KUP, moverepeat);
         kbd_setrepeat(KDOWN, moverepeat);
+        kbd_setrepeat(KLEFT, moverepeat);
+        kbd_setrepeat(KRIGHT, moverepeat);
         kbd_setrepeat(KX, 1);
         limg_free(&limg);
         load_limg(_file, &limg);
