@@ -30,7 +30,8 @@ enum {
     LIMG_ALREADYFREE     = -4,
     MALLOCERROR_LIMGDATA = -5,
     COLOR_MISSING        = -6,
-    LIMG_TOOBIG          = -7
+    LIMG_TOOBIG          = -7,
+    FILENOTFOUND         = -8
 };
 
 typedef struct {
@@ -73,6 +74,13 @@ free(limg_data);
 */
 
 int limg_encode(unsigned char **limg_data, Limg *limg);
+
+/* int limg_tofile(char *fname, Limg *limg);
+
+Create a LIMG-V1 image with the file name fname, from the Limg struct limg.
+*/
+
+int limg_tofile(char *fname, Limg *limg);
 
 /* int limg_decode(unsigned char *limg_data, Limg *limg);
 

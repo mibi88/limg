@@ -27,6 +27,7 @@ char wtext[6], htext[6];
 int wcur = 0, hcur = 0, ncur = 0;
 char ftext[9];
 int fcur = 0;
+int validscur = 0;
 FILE *fp;
 
 /*********************************** ACTIONS **********************************/
@@ -150,7 +151,7 @@ void act_open(void) {
     }
     if(kbd_kdown(KC)){
         ask_changestate = 1;
-    }else if(!kbd_kdown(KC) && ask_changestate){
+    }else if(!kbd_kdown(KC) && ask_changestate == 1){
         ask_changestate = 0;
         state = SCREEN_MAINMENU;
     }
@@ -250,18 +251,47 @@ void act_save2(void) {
         strcat(_file, ftext);
         strcat(_file, ".limg");
         /* Save */
-        out = limg_encode(&limg_data, &limg);
-        if(out >= 0){
-            fp = fopen(_file, "wb");
-            if(fp != NULL){
-                fwrite((char*)limg_data, 1, out, fp);
-                fclose(fp);
-            }else state = -3;
-        }else state = -4;
-        ask_changestate = 0;
-        state = SCREEN_EDITOR;
+        if(!checkfileexists(_file)){
+            out = limg_tofile(_file, &limg);
+            if(out < 0){
+                state = -4;
+            }
+            ask_changestate = 0;
+            state = SCREEN_EDITOR;
+        }else{
+            ask_changestate = 0;
+            state = SCREEN_VALIDSAVE;
+        }
     }
     if(!ask_changestate) fnameinput(ftext, &fcur, 8);
+}
+
+void act_valid_save(void) {
+    kbd_setrepeat(KUP, 0);
+    kbd_setrepeat(KDOWN, 0);
+    kbd_setrepeat(KX, 0);
+    if(kbd_kdown(KUP) && validscur) validscur = 0;
+    if(kbd_kdown(KDOWN) && !validscur) validscur = 1;
+    if(kbd_kdown(KX)){
+        ask_changestate = 1;
+    }else if(!kbd_kdown(KX) && ask_changestate == 1){
+        kbd_setrepeat(KUP, moverepeat);
+        kbd_setrepeat(KDOWN, moverepeat);
+        kbd_setrepeat(KLEFT, moverepeat);
+        kbd_setrepeat(KRIGHT, moverepeat);
+        kbd_setrepeat(KX, 1);
+        if(validscur){
+            out = limg_tofile(_file, &limg);
+            if(out < 0){
+                state = -4;
+            }
+            ask_changestate = 0;
+            state = SCREEN_EDITOR;
+        }else{
+            ask_changestate = 0;
+            state = SCREEN_EDITOR;
+        }
+    }
 }
 
 void act_default(void) {
@@ -300,11 +330,13 @@ void disp_colorc(void) {
 
 void disp_open(void) {
     if(filechooser(dirview, F_AMOUNT, dircur, &milifont)){
-        ask_changestate = 1;
-    }else if(!kbd_kdown(KX) && ask_changestate){
+        ask_changestate = 2;
+    }else if(!kbd_kdown(KX) && ask_changestate == 2){
         ask_changestate = 0;
         kbd_setrepeat(KUP, moverepeat);
         kbd_setrepeat(KDOWN, moverepeat);
+        kbd_setrepeat(KLEFT, moverepeat);
+        kbd_setrepeat(KRIGHT, moverepeat);
         kbd_setrepeat(KX, 1);
         limg_free(&limg);
         load_limg(_file, &limg);
@@ -338,6 +370,10 @@ void disp_save1(void) {
 
 void disp_save2(void) {
     enter_filename(134, 80, 128, 64, ftext, fcur, &milifont);
+}
+
+void disp_valid_save(void) {
+    valid_save(134, 80, 128, 64, validscur, &milifont);
 }
 
 void disp_error(void) {

@@ -7,4 +7,5 @@ limgview/sdl1_2/limgview
 limgeditor/limgedit
 *.limg
 !limgeditor/data/*.limg
+limgeditor/data/*.h
 *.png

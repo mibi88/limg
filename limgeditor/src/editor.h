@@ -21,7 +21,7 @@
 #define VWIDTH  364
 #define VHEIGHT 192
 
-#define MILIFONT "./data/milifont.limg"
+#define MILIFONT "../data/milifont.h"
 
 #define F_AMOUNT 30
 
@@ -33,7 +33,8 @@ enum {
     SCREEN_MAINMENU,
     SCREEN_NEW,
     SCREEN_SAVE1,
-    SCREEN_SAVE2
+    SCREEN_SAVE2,
+    SCREEN_VALIDSAVE
 };
 
 void act_editor(void);
@@ -44,6 +45,7 @@ void act_main_menu(void);
 void act_new(void);
 void act_save1(void);
 void act_save2(void);
+void act_valid_save(void);
 void act_default(void);
 
 void disp_editor(void);
@@ -53,6 +55,7 @@ void disp_mainmenu(void);
 void disp_new(void);
 void disp_save1(void);
 void disp_save2(void);
+void disp_valid_save(void);
 void disp_error(void);
 
 #endif

@@ -12,9 +12,11 @@
 #include "text.h"
 #include "keyboard.h"
 
+bool checkfileexists(char *file);
 void initfilechooser(char *dir_str);
 int getdirsize(void);
 int filechooser(int cur, int amount, int selection, Limg *milifont);
 int pathchooser(int cur, int amount, int selection, Limg *milifont);
+int makefilelist(void);
 
 #endif
