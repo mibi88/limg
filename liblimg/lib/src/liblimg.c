@@ -234,12 +234,13 @@ int limg_free(Limg *limg) {
 
 int limg_create(int w, int h, uint16_t bg_color, Limg *limg) {
     int i;
+    limg_free(limg);
     if(w<65536 && h<65536){
-        limg->w = w;
-        limg->h = h;
         limg->carray = NULL;
         limg->carray = malloc(sizeof(uint16_t)*(w*h));
         if(limg->carray == NULL) return MALLOCERROR_CARRAY;
+        limg->w = w;
+        limg->h = h;
         for(i=0;i<w*h;i++){
             limg->carray[i] = bg_color;
         }

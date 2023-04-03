@@ -20,6 +20,6 @@ all:
 	(cd ../liblimg/lib && make)
 	python3 ./conv/binheader.py ./data/milifont.limg
 	gcc $(SRC) -D_DEFAULT_SOURCE -o limgedit  -I../liblimg/lib/lib/include/liblimg/ \
-	-IuDraw/include/libudraw -std=c89 -Wall -Wpedantic -Wextra -lSDL -O2 -fsanitize=address
+	-IuDraw/include/libudraw -std=c89 -Wall -Wpedantic -Wextra -lSDL -O2 # -fsanitize=address
 	(cd uDraw && make clean)
 	(cd ../liblimg/lib && make clean)
