@@ -12,6 +12,16 @@ int *filelen = NULL;
 int filelistsz = 0, filetypessz = 0, filepossz = 0, filelensz = 0;
 int filesamount;
 
+bool checkfileexists(char *file) {
+    FILE *fp;
+    fp = fopen(file, "rb");
+    if(fp){
+        fclose(fp);
+        return 1;
+    }
+    return 0;
+}
+
 int getdirsize(void) {
     return filesamount;
 }

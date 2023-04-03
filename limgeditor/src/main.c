@@ -62,6 +62,9 @@ int main(void) {
             case SCREEN_SAVE2:
                 act_save2();
                 break;
+            case SCREEN_VALIDSAVE:
+                act_valid_save();
+                break;
             default:
                 act_default();
         }
@@ -84,6 +87,9 @@ int main(void) {
                 break;
             case SCREEN_SAVE2:
                 disp_save2();
+                break;
+            case SCREEN_VALIDSAVE:
+                disp_valid_save();
                 break;
             default:
                 if(state < 0){
