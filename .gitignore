@@ -9,3 +9,7 @@ limgeditor/limgedit
 !limgeditor/data/*.limg
 limgeditor/data/*.h
 *.png
+*.g3a
+*.g1a
+**/build-cg
+**/build-fx
