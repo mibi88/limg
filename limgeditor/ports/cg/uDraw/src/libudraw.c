@@ -26,23 +26,38 @@ int _scale, _w, _h, _fps;
 clock_t _last_t;
 Uint8 *_kbuffer;
 char _char = '\0';
+int _time, _timer, _ticks;
+int _key, _timeout, _lastkey;
 
 uint32_t keymap_translate(int key, bool shift, bool alpha);
 
 int getkey_ignoremod(void) {
-    key_event_t ev;
-    bool kf = 0;
-    int key = 0;
-    while((ev = pollevent()).type != KEYEV_NONE){
-        if(ev.key != KEY_SHIFT && !kf){
-            key = ev.key;
-            kf = 1;
+    if(_timeout >= 5){
+        if(_key == _lastkey){
+            return _key;
+        }else{
+            _lastkey = _key;
+            _timeout = 0;
+            return _key;
         }
-    }
-    return key;
+    }else _timeout++;
+    return 0;
+}
+
+int _tick(void) {
+    _time++;
+    return TIMER_CONTINUE;
 }
 
 void uInit(int w, int h, const char *title, int scale, int fps) {
+    _timeout = 0;
+    _lastkey = 0;
+    _time = 0;
+    _timer = timer_configure(TIMER_TMU, 1000, GINT_CALL(_tick));
+	if(_timer<0){
+		exit(-1);
+	}
+	timer_start(_timer);
     _w = w;
     _h = h;
     _scale = scale;
@@ -51,8 +66,8 @@ void uInit(int w, int h, const char *title, int scale, int fps) {
     if(_fps<1){
     	_fps = 50;
     }
+    _ticks = 1000/_fps;
     uClear(0x00000000);
-    _last_t = clock()*1000;
 }
 
 void uClear(uint32_t color) {
@@ -61,7 +76,7 @@ void uClear(uint32_t color) {
 
 void uPixel(int x, int y, uint32_t color) {
     if(x>=0 && x<_w && y>=0 && y<_h){
-        dpixel(x, y, rgb888torgb565(color));
+        gint_vram[DWIDTH*y+x] = rgb888torgb565(color);
     }
 }
 
@@ -70,7 +85,16 @@ void uShow(void) {
 }
 
 bool uAskexit(void) {
-    clearevents();
+    /* For getkey_ignoremod */
+    key_event_t ev;
+    _key = 0;
+    bool kf = 0;
+    while((ev = pollevent()).type != KEYEV_NONE){
+        if(ev.key != KEY_SHIFT && !kf){
+            _key = ev.key;
+            kf = 1;
+        }
+    }
     return keydown(KEY_MENU) | keydown(KEY_EXIT);
 }
 
@@ -84,16 +108,10 @@ char uGetchar(void) {
 }
 
 void uWaitnextframe(void) {
-    Uint32 ticks;
-    if(clock()*1000 <= _last_t){
-        _last_t = clock()*1000;
-        return;
-    }
-    ticks = 1000/(Uint32)_fps;
-    while(clock()*1000 - _last_t < ticks);
-    _last_t = clock()*1000;
+    while(_time < _ticks) sleep();
+    _time = 0;
 }
 
 void uDeinit(void) {
-    return;
+    timer_stop(_timer);
 }

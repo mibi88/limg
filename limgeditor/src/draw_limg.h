@@ -22,6 +22,7 @@
 #include <liblimg.h>
 #include <rgbconv.h>
 #include <libudraw.h>
+#include "gfx.h"
 
 void draw_limg(Limg *limg, int sx, int sy, int w, int h, int ix, int iy, int scale, int cx, int cy);
 

@@ -15,7 +15,7 @@ execute_process(COMMAND python3 ./conv/binheader.py ./data/milifont.limg WORKING
 set(SOURCES
   ../../src/main.c
   ../../src/draw_limg.c
-  ../../src/gfx.c
+  src/gfx.c
   ../../src/popups.c
   ../../src/keyboard.c
   ../../src/file.c

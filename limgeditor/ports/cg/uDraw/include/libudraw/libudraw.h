@@ -25,6 +25,8 @@
 #include <stdbool.h>
 #include <gint/display.h>
 #include <gint/keyboard.h>
+#include <gint/timer.h>
+#include <gint/cpu.h>
 #include <gint/fs.h>
 #include <time.h>
 

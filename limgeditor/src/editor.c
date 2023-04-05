@@ -108,6 +108,7 @@ void act_menu(void) {
             state = SCREEN_COLORC;
         }else if(menucur == 3){
             color = limg_getpixel(x, y, &limg);
+            ask_changestate = 1;
         }else if(menucur == 4){
             initfilechooser(".");
             state = SCREEN_SAVE1;
