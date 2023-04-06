@@ -51,6 +51,7 @@ void act_save1(void);
 void act_save2(void);
 void act_valid_save(void);
 void act_default(void);
+void act_askexit(void);
 
 void disp_curpos(void);
 void disp_editor(void);
@@ -63,5 +64,6 @@ void disp_save2(void);
 void disp_valid_save(void);
 void disp_error(void);
 void disp_help(void);
+void disp_askexit(void);
 
 #endif

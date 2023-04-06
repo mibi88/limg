@@ -19,7 +19,11 @@ void load_limg(char *file_name, Limg *limg) {
             puts("[Load limg] More memory needed !");
             state = -5;
         }else{
-            fread(limg_data, 1, sizeof(unsigned char) * size, fp);
+            if(!fread(limg_data, 1, sizeof(unsigned char) * size, fp)){
+                fclose(fp);
+                state = -6;
+                return;
+            }
             fclose(fp);
             out = limg_decode(limg_data, limg);
             free(limg_data);

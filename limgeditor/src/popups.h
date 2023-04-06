@@ -13,5 +13,6 @@ void valid_save(int sx, int sy, int w, int h, int cur, Limg *milifont);
 void new_file(int sx, int sy, int w, int h, char *wtext, char *htext, int wcur, int hcur, int cur, Limg *milifont);
 void error(int sx, int sy, int w, int h, Limg *milifont);
 void enter_filename(int sx, int sy, int w, int h, char *filename, int cur, Limg *milifont);
+void ask_exit(int sx, int sy, int w, int h, int cur, Limg *milifont);
 
 #endif
