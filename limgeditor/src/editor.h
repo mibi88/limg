@@ -25,6 +25,9 @@
 
 #define F_AMOUNT 30
 
+#define SCREEN_AMOUNT 10
+#define HELP_LEN (16*3+1)
+
 enum {
     SCREEN_EDITOR = 0,
     SCREEN_COLORC,
@@ -34,7 +37,8 @@ enum {
     SCREEN_NEW,
     SCREEN_SAVE1,
     SCREEN_SAVE2,
-    SCREEN_VALIDSAVE
+    SCREEN_VALIDSAVE,
+    SCREEN_ASKEXIT
 };
 
 void act_editor(void);
@@ -48,6 +52,7 @@ void act_save2(void);
 void act_valid_save(void);
 void act_default(void);
 
+void disp_curpos(void);
 void disp_editor(void);
 void disp_colorc(void);
 void disp_open(void);
@@ -57,5 +62,6 @@ void disp_save1(void);
 void disp_save2(void);
 void disp_valid_save(void);
 void disp_error(void);
+void disp_help(void);
 
 #endif

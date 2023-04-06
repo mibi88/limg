@@ -22,6 +22,8 @@
 int state = SCREEN_MAINMENU;
 unsigned char *limg_data = NULL;
 Limg limg, milifont;
+int run;
+extern int validscur;
 
 int main(void) {
     limg_init(&milifont);
@@ -35,8 +37,13 @@ int main(void) {
     kbd_setrepeat(KC, 0);
     kbd_setrepeat(KV, 0);
     uInit(396, 224, "Limg image editor", 4, 20);
-    while(!uAskexit()){
+    run = 1;
+    while(run){
         uClear((uint32_t)0xC8FC90);
+        if(uAskexit()){
+            validscur = 0;
+            state = SCREEN_ASKEXIT;
+        }
         switch(state){
             case SCREEN_EDITOR:
                 act_editor();
@@ -65,6 +72,9 @@ int main(void) {
             case SCREEN_VALIDSAVE:
                 act_valid_save();
                 break;
+            case SCREEN_ASKEXIT:
+                act_askexit();
+                break;
             default:
                 act_default();
         }
@@ -91,11 +101,15 @@ int main(void) {
             case SCREEN_VALIDSAVE:
                 disp_valid_save();
                 break;
+            case SCREEN_ASKEXIT:
+                disp_askexit();
+                break;
             default:
                 if(state < 0){
                     disp_error();
                 }
         }
+        disp_help();
         uShow();
         uWaitnextframe();
     }

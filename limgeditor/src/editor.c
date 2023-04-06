@@ -9,6 +9,19 @@ const char menu[MENU_SIZE][9] = {
     "Mn. Menu"
 };
 
+const char help[SCREEN_AMOUNT][HELP_LEN+1] = {
+    "|Set pixel      |Menu           |Change color   |\0",
+    "|OK             |               |               |\0",
+    "|OK             |Quit menu      |               |\0",
+    "|Open           |Cancel         |               |\0",
+    "|OK             |               |Go to editor   |\0",
+    "|OK             |               |               |\0",
+    "|Open dir.      |Cancel         |OK path        |\0",
+    "|OK             |               |               |\0",
+    "|OK             |               |               |\0",
+    "|OK             |               |               |\0"
+};
+
 int ask_changestate = 0;
 
 extern char _file[PATH_MAX+NAME_MAX], _path[PATH_MAX];
@@ -28,6 +41,7 @@ int wcur = 0, hcur = 0, ncur = 0;
 char ftext[9];
 int fcur = 0;
 int validscur = 0;
+extern int run;
 FILE *fp;
 
 /*********************************** ACTIONS **********************************/
@@ -295,6 +309,29 @@ void act_valid_save(void) {
     }
 }
 
+void act_askexit(void) {
+    kbd_setrepeat(KUP, 0);
+    kbd_setrepeat(KDOWN, 0);
+    kbd_setrepeat(KX, 0);
+    if(kbd_kdown(KUP) && validscur) validscur = 0;
+    if(kbd_kdown(KDOWN) && !validscur) validscur = 1;
+    if(kbd_kdown(KX)){
+        ask_changestate = 1;
+    }else if(!kbd_kdown(KX) && ask_changestate == 1){
+        kbd_setrepeat(KUP, moverepeat);
+        kbd_setrepeat(KDOWN, moverepeat);
+        kbd_setrepeat(KLEFT, moverepeat);
+        kbd_setrepeat(KRIGHT, moverepeat);
+        kbd_setrepeat(KX, 1);
+        if(validscur){
+            run = 0;
+        }else{
+            ask_changestate = 0;
+            state = SCREEN_EDITOR;
+        }
+    }
+}
+
 void act_default(void) {
     if(state < 0){
         kbd_setrepeat(KX, 0);
@@ -318,11 +355,19 @@ void act_default(void) {
 
 /*********************************** DISPLAY **********************************/
 
+void disp_curpos(void) {
+    char buffer[15];
+    sprintf(buffer, "%d, %d", x, y);
+    rect16(33, 34+strlen(buffer)*4, 204, 211, 0xFFFF);
+    stext(34, 205, 3, 5, buffer, &milifont);
+}
+
 void disp_editor(void) {
     draw_limg(&limg, 32, 0, VWIDTH, VHEIGHT, ix, iy, scale, x, y);
     vline(31, 0, VHEIGHT, 0x588C28);
     hline(VHEIGHT, 32, 396, 0x588C28);
     draw_menu(32, 194, menucur, state == SCREEN_MENU, menu, &milifont);
+    disp_curpos();
 }
 
 void disp_colorc(void) {
@@ -379,4 +424,15 @@ void disp_valid_save(void) {
 
 void disp_error(void) {
     error(134, 80, 128, 64, &milifont);
+}
+
+void disp_help(void) {
+    if(state >= 0 && state < SCREEN_AMOUNT){
+        rect16(1, 1+HELP_LEN*4, 216, 223, 0xFFFF);
+        stext(2, 217, 3, 5, (char *)help[state], &milifont);
+    }
+}
+
+void disp_askexit(void) {
+    ask_exit(134, 80, 128, 64, validscur, &milifont);
 }
