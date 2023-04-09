@@ -6,9 +6,11 @@ limgview/sdl2/limgview
 limgview/sdl1_2/limgview
 limgeditor/limgedit
 *.limg
+!/limgicon.limg
 !limgeditor/data/*.limg
 limgeditor/data/*.h
 *.png
+!limgeditor/ports/cg/assets-cg/*.png
 *.g3a
 *.g1a
 **/build-cg
