@@ -43,9 +43,10 @@ void _put_uint16_t(uint16_t value, unsigned char *out, int start_pos) {
     out[start_pos+1] = value;
 }
 
-void _fput_uint16_t(uint16_t value, FILE *fp) {
-    fputc(value>>8, fp);
-    fputc(value, fp);
+int _fput_uint16_t(uint16_t value, FILE *fp) {
+    if(fputc(value>>8, fp) == EOF) return 1;
+    if(fputc(value, fp) == EOF) return 1;
+    return 0;
 }
 
 int _getcolor(uint16_t color, uint16_t palette[256], int psize) {
@@ -143,23 +144,47 @@ int limg_tofile(char *fname, Limg *limg) {
 #endif
     /* Start writing ... */
     /* Write the magic "LIMG-V1" */
-    fputs((const char *)"LIMG-V1", fp);
-    _fput_uint16_t((uint16_t)limg->w, fp);
-    _fput_uint16_t((uint16_t)limg->h, fp);
-    fputc((unsigned char)palette_pos, fp);
+    if(fputs((const char *)"LIMG-V1", fp) == EOF){
+        fclose(fp);
+        return WRITEERROR;
+    }
+    if(_fput_uint16_t((uint16_t)limg->w, fp)){
+        fclose(fp);
+        return WRITEERROR;
+    }
+    if(_fput_uint16_t((uint16_t)limg->h, fp)){
+        fclose(fp);
+        return WRITEERROR;
+    }
+    if(fputc((unsigned char)palette_pos, fp) == EOF){
+        fclose(fp);
+        return WRITEERROR;
+    }
     for(i=0;i<palette_pos;i++){ /* Put the palette into limg_data if we've one. */
-        _fput_uint16_t(palette[i], fp);
+        if(_fput_uint16_t(palette[i], fp)){
+            fclose(fp);
+            return WRITEERROR;
+        }
     }
     /* And now, trow the pixels into limg_data */
     if(palette_pos>0){ /* If we've a palette */
         for(i=0;i<limg->w*limg->h;i++){
             pos = _getcolor(limg->carray[i], palette, palette_pos);
-            if(pos < 0) return COLOR_MISSING;
-            fputc((unsigned char)pos, fp);
+            if(pos < 0){
+                fclose(fp);
+                return COLOR_MISSING;
+            }
+            if(fputc((unsigned char)pos, fp) == EOF){
+                fclose(fp);
+                return WRITEERROR;
+            }
         }
     }else{
         for(i=0;i<limg->w*limg->h;i++){
-            _fput_uint16_t(limg->carray[i], fp);
+            if(_fput_uint16_t(limg->carray[i], fp)){
+                fclose(fp);
+                return WRITEERROR;
+            }
         }
     }
     fclose(fp);

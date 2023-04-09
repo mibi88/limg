@@ -12,6 +12,8 @@
 #include "text.h"
 #include "keyboard.h"
 
+#define FILELIST_START 7
+
 bool checkfileexists(char *file);
 void initfilechooser(char *dir_str);
 int getdirsize(void);

@@ -171,7 +171,7 @@ int filechooser(int cur, int amount, int selection, Limg *milifont) {
                     rgb[0] = (unsigned char)_frame*15;
                     rgb[1] = rgb[0];
                     rgb[2] = rgb[0];
-                    rect(1, 394, 8+di*7-1, 8+di*7+6, makergb888(rgb));
+                    rect(1, 394, FILELIST_START+di*7-1, FILELIST_START+di*7+6, makergb888(rgb));
                     if(kbd_kdown(KX) && strlen(name)+1+strlen(_path) < PATH_MAX){
                         strcat(_path, "/");
                         strcat(_path, name);
@@ -185,17 +185,17 @@ int filechooser(int cur, int amount, int selection, Limg *milifont) {
                         makefilelist();
                     }
                 }
-                rect(2, 393, 8+di*7, 8+di*7+5, 0xF8FCF8);
+                rect(2, 393, FILELIST_START+di*7, FILELIST_START+di*7+5, 0xF8FCF8);
                 if(strlen(name)+3 < 94) sprintf(dsp, "[%.94s]", name);
                 else sprintf(dsp, "[%.88s...]", name);
-                stext(2, 8+di*7, 3, 5, dsp, milifont);
+                stext(2, FILELIST_START+di*7, 3, 5, dsp, milifont);
             }else{
                 di = i-cur;
                 if(di == selection){
                     rgb[0] = (unsigned char)_frame*15;
                     rgb[1] = rgb[0];
                     rgb[2] = rgb[0];
-                    rect(1, 394, 8+di*7-1, 8+di*7+6, makergb888(rgb));
+                    rect(1, 394, FILELIST_START+di*7-1, FILELIST_START+di*7+6, makergb888(rgb));
                     if(kbd_kdown(KX) && PATH_MAX+NAME_MAX>strlen(_path)+strlen(name)+1){
                         memset(_file, '\0', PATH_MAX+NAME_MAX);
                         strcpy(_file, _path);
@@ -204,10 +204,10 @@ int filechooser(int cur, int amount, int selection, Limg *milifont) {
                         r = 1;
                     }
                 }
-                rect(2, 393, 8+di*7, 8+di*7+5, 0xF8FCF8);
+                rect(2, 393, FILELIST_START+di*7, FILELIST_START+di*7+5, 0xF8FCF8);
                 if(strlen(name)+3 < 96) sprintf(dsp, "%.96s", name);
                 else sprintf(dsp, "%.90s...", name);
-                stext(2, 8+di*7, 3, 5, dsp, milifont);
+                stext(2, FILELIST_START+di*7, 3, 5, dsp, milifont);
             }
         }
     }
@@ -233,7 +233,7 @@ int pathchooser(int cur, int amount, int selection, Limg *milifont) {
                     rgb[0] = (unsigned char)_frame*15;
                     rgb[1] = rgb[0];
                     rgb[2] = rgb[0];
-                    rect(1, 394, 8+di*7-1, 8+di*7+6, makergb888(rgb));
+                    rect(1, 394, FILELIST_START+di*7-1, FILELIST_START+di*7+6, makergb888(rgb));
                     if(kbd_kdown(KX) && strlen(name)+1+strlen(_path) < PATH_MAX){
                         strcat(_path, "/");
                         strcat(_path, name);
@@ -247,22 +247,22 @@ int pathchooser(int cur, int amount, int selection, Limg *milifont) {
                         makefilelist();
                     }
                 }
-                rect(2, 393, 8+di*7, 8+di*7+5, 0xF8FCF8);
+                rect(2, 393, FILELIST_START+di*7, FILELIST_START+di*7+5, 0xF8FCF8);
                 if(strlen(name)+3 < 94) sprintf(dsp, "[%.94s]", name);
                 else sprintf(dsp, "[%.88s...]", name);
-                stext(2, 8+di*7, 3, 5, dsp, milifont);
+                stext(2, FILELIST_START+di*7, 3, 5, dsp, milifont);
             }else{
                 di = i-cur;
                 if(di == selection){
                     rgb[0] = (unsigned char)_frame*15;
                     rgb[1] = rgb[0];
                     rgb[2] = rgb[0];
-                    rect(1, 394, 8+di*7-1, 8+di*7+6, makergb888(rgb));
+                    rect(1, 394, FILELIST_START+di*7-1, FILELIST_START+di*7+6, makergb888(rgb));
                 }
-                rect(2, 393, 8+di*7, 8+di*7+5, 0xF8FCF8);
+                rect(2, 393, FILELIST_START+di*7, FILELIST_START+di*7+5, 0xF8FCF8);
                 if(strlen(name)+3 < 96) sprintf(dsp, "%.96s", name);
                 else sprintf(dsp, "%.90s...", name);
-                stext(2, 8+di*7, 3, 5, dsp, milifont);
+                stext(2, FILELIST_START+di*7, 3, 5, dsp, milifont);
             }
         }
     }

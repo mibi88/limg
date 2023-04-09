@@ -31,7 +31,8 @@ enum {
     MALLOCERROR_LIMGDATA = -5,
     COLOR_MISSING        = -6,
     LIMG_TOOBIG          = -7,
-    FILENOTFOUND         = -8
+    FILENOTFOUND         = -8,
+    WRITEERROR           = -9
 };
 
 typedef struct {
