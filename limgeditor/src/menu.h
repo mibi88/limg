@@ -6,7 +6,7 @@
 #include "gfx.h"
 #include "text.h"
 
-#define MENU_SIZE 6
+#define MENU_SIZE 7
 
 void draw_menu(int sx, int sy, int cur, bool active, const char menu[MENU_SIZE][9], Limg *milifont);
 

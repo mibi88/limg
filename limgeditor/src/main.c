@@ -44,6 +44,7 @@ int main(void) {
             validscur = 0;
             state = SCREEN_ASKEXIT;
         }
+        fix_offset();
         switch(state){
             case SCREEN_EDITOR:
                 act_editor();
@@ -75,6 +76,9 @@ int main(void) {
             case SCREEN_ASKEXIT:
                 act_askexit();
                 break;
+            case SCREEN_GOTOXY:
+                act_gotoxy();
+                break;
             default:
                 act_default();
         }
@@ -103,6 +107,9 @@ int main(void) {
                 break;
             case SCREEN_ASKEXIT:
                 disp_askexit();
+                break;
+            case SCREEN_GOTOXY:
+                disp_gotoxy();
                 break;
             default:
                 if(state < 0){

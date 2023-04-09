@@ -158,3 +158,16 @@ void ask_exit(int sx, int sy, int w, int h, int cur, Limg *milifont) {
     rect(sx+4, sx+w-3, sy+h/2+2, sy+h-3, 0xF8FCF8);
     stext(sx+w/2-(4*4/2), sy+h/2+h/4-3, 3, 5, "Quit", milifont);
 }
+
+void goto_xy(int sx, int sy, int w, int h, char *xtext, char *ytext, int xcur, int ycur, int cur, Limg *milifont) {
+    vline(sx, sy+1, sy+h, 0xA85450);
+    vline(sx+w, sy+1, sy+h, 0xA85450);
+    hline(sy, sx+1, sx+w, 0xA85450);
+    hline(sy+h, sx+1, sx+w, 0xA85450);
+    rect(sx+1, sx+w, sy+1, sy+h, 0xF8FCF8);
+    /* Inside the popup */
+    stext(sx+3, sy+3, 3, 5, "X :", milifont);
+    textbox(sx+3+(4*4), sy+1, !cur, xtext, xcur, 5, milifont);
+    stext(sx+3, sy+11, 3, 5, "Y :", milifont);
+    textbox(sx+3+(4*4), sy+8, cur, ytext, ycur, 5, milifont);
+}

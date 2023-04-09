@@ -43,6 +43,23 @@ void draw_limg(Limg *limg, int sx, int sy, int w, int h, int ix, int iy, int sca
                     }
                 }
             }
+            color = rgb888torgb565(makergb888(rgb));
+            if(ix+x == limg->w+1 && iy+y < limg->h){
+                dx = sx+(x-1)*scale;
+                for(by=0;by<scale;by++){
+                    dy = sy+by+y*scale;
+                    if(dy>=0 && dy<w) pixel16(dx, dy, color);
+                }
+            }else if(iy+y == limg->h+1 && ix+x < limg->w){
+                dy = sy+(y-1)*scale;
+                for(bx=0;bx<scale;bx++){
+                    dx = sx+bx+x*scale;
+                    if(dx>=0 && dx<w) pixel16(dx, dy, color);
+                }
+            }
+            if(ix+x == limg->w+1 && iy+y == limg->h+1){
+                pixel16(sx+(x-1)*scale, sy+(y-1)*scale, color);
+            }
         }
     }
     _frame++;

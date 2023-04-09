@@ -6,7 +6,8 @@ const char menu[MENU_SIZE][9] = {
     "Cg. Col.",
     "Gr. Col.",
     "Save    ",
-    "Mn. Menu"
+    "Mn. Menu",
+    "Go to XY"
 };
 
 const char help[SCREEN_AMOUNT][HELP_LEN+1] = {
@@ -46,19 +47,26 @@ FILE *fp;
 
 /*********************************** ACTIONS **********************************/
 
+void fix_offset(void) {
+    /* Fix ix and iy */
+    while(x > ix+VWIDTH/scale-1 || ix < 0) ix++;
+    while(x < ix) ix--;
+    while(y > iy+VHEIGHT/scale-1 || iy < 0) iy++;
+    while(y < iy) iy--;
+    if(x >= limg.w) x = limg.w - 1;
+    if(y >= limg.h) y = limg.h - 1;
+    if(x < 0) x = 0;
+    if(y < 0) y = 0;
+    if(limg.w*scale < VWIDTH) ix = 0;
+    if(limg.h*scale < VHEIGHT) iy = 0;
+}
+
 void act_editor(void) {
     /* Move the cursor */
     if(kbd_kdown(KUP) && y>0) y--;
     if(kbd_kdown(KDOWN) && y<limg.h-1) y++;
     if(kbd_kdown(KLEFT) && x>0) x--;
     if(kbd_kdown(KRIGHT) && x<limg.w-1) x++;
-    /* Fix ix and iy */
-    while(x > ix+VWIDTH/scale-1) ix++;
-    while(x < ix) ix--;
-    while(y > iy+VHEIGHT/scale-1) iy++;
-    while(y < iy) iy--;
-    if(x >= limg.w) x = limg.w - 1;
-    if(y >= limg.h) y = limg.h - 1;
     /* Other actions */
     if(kbd_kdown(KC)){
         kbd_setrepeat(KLEFT, 0);
@@ -128,6 +136,15 @@ void act_menu(void) {
             state = SCREEN_SAVE1;
         }else if(menucur == 5){
             state = SCREEN_MAINMENU;
+        }else{
+            memset(wtext, '\0', 6);
+            sprintf(wtext, "%d", x);
+            memset(htext, '\0', 6);
+            sprintf(htext, "%d", y);
+            wcur = strlen(wtext);
+            hcur = strlen(htext);
+            ncur = 0;
+            state = SCREEN_GOTOXY;
         }
     }else if(ask_changestate == 2 && !uKeydown(KX)){
         moverepeat = !moverepeat;
@@ -332,6 +349,35 @@ void act_askexit(void) {
     }
 }
 
+void act_gotoxy(void) {
+    kbd_setrepeat(KUP, 0);
+    kbd_setrepeat(KDOWN, 0);
+    kbd_setrepeat(KLEFT, 0);
+    kbd_setrepeat(KRIGHT, 0);
+    kbd_setrepeat(KX, 0);
+    if(kbd_kdown(KUP) && ncur) ncur = 0;
+    if(kbd_kdown(KDOWN) && !ncur) ncur = 1;
+    if(!ncur) intinput(wtext, &wcur, 5);
+    if(ncur) intinput(htext, &hcur, 5);
+    if(kbd_kdown(KX)){
+        ask_changestate = 1;
+    }else if(!kbd_kdown(KX) && ask_changestate){
+        x = atoi(wtext);
+        y = atoi(htext);
+        if(x < 0) x = 0;
+        if(y < 0) y = 0;
+        if(x >= limg.w) x = limg.w-1;
+        if(y >= limg.h) y = limg.h-1;
+        kbd_setrepeat(KUP, moverepeat);
+        kbd_setrepeat(KDOWN, moverepeat);
+        kbd_setrepeat(KLEFT, moverepeat);
+        kbd_setrepeat(KRIGHT, moverepeat);
+        kbd_setrepeat(KX, 1);
+        ask_changestate = 0;
+        state = out < 0 ? -1 : SCREEN_EDITOR;
+    }
+}
+
 void act_default(void) {
     if(state < 0){
         kbd_setrepeat(KX, 0);
@@ -357,7 +403,7 @@ void act_default(void) {
 
 void disp_curpos(void) {
     char buffer[15];
-    sprintf(buffer, "%d, %d", x, y);
+    sprintf(buffer, "%d, %d | x%d", x, y, scale);
     rect16(33, 34+strlen(buffer)*4, 204, 211, 0xFFFF);
     stext(34, 205, 3, 5, buffer, &milifont);
 }
@@ -435,4 +481,8 @@ void disp_help(void) {
 
 void disp_askexit(void) {
     ask_exit(134, 80, 128, 64, validscur, &milifont);
+}
+
+void disp_gotoxy(void) {
+    goto_xy(134, 80, 128, 64, wtext, htext, wcur, hcur, ncur, &milifont);
 }
