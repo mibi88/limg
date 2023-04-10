@@ -18,7 +18,7 @@ set(SOURCES
   src/gfx.c
   ../../src/popups.c
   ../../src/keyboard.c
-  ../../src/file.c
+  src/file.c
   ../../src/error.c
   ../../src/text.c
   ../../src/image.c

@@ -1,8 +1,13 @@
-#include "file.h"
+#include "../../../src/file.h"
+#include <gint/gint.h>
 
 extern int state;
 
-void load_limg(char *file_name, Limg *limg) {
+Limg *_limg;
+
+#define limg _limg
+
+void _load_limg(char *file_name) {
     int out, size;
     FILE *fp;
     unsigned char *limg_data = NULL;
@@ -32,6 +37,18 @@ void load_limg(char *file_name, Limg *limg) {
     }
 }
 
+#undef limg
+
+void load_limg(char *file_name, Limg *limg) {
+    _limg = limg;
+    gint_world_switch(GINT_CALL(_load_limg, file_name));
+}
+
+int _save_limg(char *file_name) {
+    return limg_tofile(file_name, _limg);
+}
+
 int save_limg(char *file_name, Limg *limg) {
-    return limg_tofile(file_name, limg);
+    _limg = limg;
+    return gint_world_switch(GINT_CALL(_save_limg, file_name));
 }

@@ -7,5 +7,6 @@
 #include "error.h"
 
 void load_limg(char *file_name, Limg *limg);
+int save_limg(char *file_name, Limg *limg);
 
 #endif

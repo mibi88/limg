@@ -1,4 +1,5 @@
 #include "../../../src/filechooser.h"
+#include <gint/gint.h>
 
 extern int _frame;
 
@@ -12,7 +13,7 @@ int *filelen = NULL;
 int filelistsz = 0, filetypessz = 0, filepossz = 0, filelensz = 0;
 int filesamount;
 
-bool checkfileexists(char *file) {
+bool _checkfileexists(char *file) {
     FILE *fp;
     fp = fopen(file, "rb");
     if(fp){
@@ -20,6 +21,10 @@ bool checkfileexists(char *file) {
         return 1;
     }
     return 0;
+}
+
+bool checkfileexists(char *file) {
+    return gint_world_switch(GINT_CALL(_checkfileexists, file));
 }
 
 int getdirsize(void) {
@@ -38,7 +43,7 @@ void initfilechooser(char *dir_str) {
     makefilelist();
 }
 
-int makefilelist(void) {
+int _makefilelist(void) {
     DIR *dir;
     struct dirent *ent;
     int sz, i;
@@ -152,6 +157,10 @@ int makefilelist(void) {
     }
     if(!filelist || !filetypes || !filepos || !filelen) return -2;
     return 0;
+}
+
+int makefilelist(void) {
+    return gint_world_switch(GINT_CALL(_makefilelist));
 }
 
 int filechooser(int cur, int amount, int selection, Limg *milifont) {

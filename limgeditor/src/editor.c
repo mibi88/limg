@@ -284,7 +284,7 @@ void act_save2(void) {
         strcat(_file, ".limg");
         /* Save */
         if(!checkfileexists(_file)){
-            out = limg_tofile(_file, &limg);
+            out = save_limg(_file, &limg);
             if(out < 0){
                 state = -4;
             }
@@ -432,7 +432,7 @@ void disp_open(void) {
         kbd_setrepeat(KX, 1);
         limg_free(&limg);
         load_limg(_file, &limg);
-        state = SCREEN_EDITOR;
+        if(state > 0) state = SCREEN_EDITOR;
     }
 }
 
